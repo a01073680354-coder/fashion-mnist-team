@@ -1,13 +1,13 @@
 # coding: utf-8
 # GitHub: https://github.com/WegraLee/deep-learning-from-scratch/blob/master/common/multi_layer_net.py
-# 수업에서 사용한 common/layers.py와 함께 사용하도록 ReLU 부분만 남긴 버전.
+# 수업 코드에서 사용한 계층으로 구성
 import numpy as np
 from collections import OrderedDict
 from common.layers import Affine, Relu, SoftmaxWithLoss
 
 
 class MultiLayerNet:
-    """4~6장에서 배운 완전연결 신경망(ReLU, He 초기화, 가중치 감소)."""
+    """ReLU를 사용하는 다층 신경망"""
 
     def __init__(self, input_size, hidden_size_list, output_size,
                  activation='relu', weight_init_std='relu', weight_decay_lambda=0):
@@ -18,14 +18,14 @@ class MultiLayerNet:
         self.weight_decay_lambda = weight_decay_lambda
         self.params = {}
 
-        # 가중치 초기화(He 초기화)
+        # He 초기화
         all_sizes = [input_size] + hidden_size_list + [output_size]
         for i in range(1, len(all_sizes)):
             scale = np.sqrt(2.0 / all_sizes[i - 1])
             self.params['W' + str(i)] = scale * np.random.randn(all_sizes[i - 1], all_sizes[i])
             self.params['b' + str(i)] = np.zeros(all_sizes[i])
 
-        # 층들을 순서대로 저장
+        # 계층 생성
         self.layers = OrderedDict()
         for i in range(1, self.hidden_layer_num + 1):
             self.layers['Affine' + str(i)] = Affine(self.params['W' + str(i)], self.params['b' + str(i)])
@@ -55,7 +55,7 @@ class MultiLayerNet:
         return np.mean(y == t)
 
     def gradient(self, x, t):
-        # 순전파 -> 역전파(5장)
+        # 오차역전파로 기울기 계산
         self.loss(x, t)
         dout = self.last_layer.backward(1)
         for layer in reversed(list(self.layers.values())):
