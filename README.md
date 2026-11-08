@@ -4,6 +4,7 @@
 
 ## 파일
 - `fashion_mnist_team.py`: 데이터 불러오기, 학습, 실험
+- `mnist_reader.py`: GitHub에서 가져온 데이터 읽기 코드
 - `common/multi_layer_net.py`: 신경망 모델
 - `common/layers.py`: ReLU, Affine, Softmax 계층
 
