@@ -30,23 +30,23 @@ class Affine:
         self.db = None
 
     def forward(self, x):
-        # 입력 데이터의 원래 형태 저장
+        # 입력 크기 저장
         self.original_x_shape = x.shape
-        # 입력 데이터를 2차원 배열로 변환
+        # 2차원으로 변환
         x = x.reshape(x.shape[0], -1)
         self.x = x
-        # 순전파 계산
+        # 순전파
         out = np.dot(self.x, self.W) + self.b
         return out
 
     def backward(self, dout):
-        # 입력 데이터에 대한 기울기
+        # 입력 기울기
         dx = np.dot(dout, self.W.T)
-        # 가중치에 대한 기울기
+        # 가중치 기울기
         self.dW = np.dot(self.x.T, dout)
-        # 편향에 대한 기울기
+        # 편향 기울기
         self.db = np.sum(dout, axis=0)
-        # 원래 입력 형태로 복원
+        # 입력 크기로 복원
         dx = dx.reshape(*self.original_x_shape)
         return dx
 
