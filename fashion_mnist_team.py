@@ -137,7 +137,6 @@ def main():
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.savefig(out / 'loss.png')
-    plt.close()
 
     plt.figure()
     plt.plot(train_accs, label='train')
@@ -147,7 +146,6 @@ def main():
     plt.ylabel('Accuracy')
     plt.legend()
     plt.savefig(out / 'accuracy.png')
-    plt.close()
 
     # 마지막에 테스트 정확도 확인
     test_acc = network.accuracy(x_test, t_test)
@@ -158,6 +156,10 @@ def main():
     with (out / filename).open('wb') as f:
         pickle.dump(network, f)
     print('저장 완료:', out / filename)
+
+    # 학습이 끝나면 두 그래프를 화면에 표시
+    plt.show()
+    plt.close('all')
 
 
 if __name__ == '__main__':
