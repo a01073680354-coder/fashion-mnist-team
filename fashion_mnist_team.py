@@ -1,6 +1,6 @@
-# Fashion-MNIST 팀프로젝트: 4, 5, 6장 실습 내용으로 만든 신경망
-# 데이터: https://github.com/zalandoresearch/fashion-mnist
-# 신경망: https://github.com/WegraLee/deep-learning-from-scratch
+# Fashion-MNIST 팀플 코드
+# 데이터 출처: https://github.com/zalandoresearch/fashion-mnist
+# 참고 코드: https://github.com/WegraLee/deep-learning-from-scratch
 
 import csv
 import copy
@@ -15,13 +15,13 @@ import matplotlib.pyplot as plt
 from common.multi_layer_net import MultiLayerNet
 
 
-# 조 번호는 나중에 직접 작성 (예: '6')
+# 조 번호 입력 (예: '6')
 TEAM_NUMBER = ''
 BASE_DIR = Path(__file__).resolve().parent
 
 
 def load_fashion_mnist():
-    """GitHub의 Fashion-MNIST를 받아 공식 mnist_reader.py로 읽는다."""
+    """Fashion-MNIST 데이터 불러오기"""
     github_folder = BASE_DIR / 'fashion-mnist'
     data_folder = github_folder / 'data' / 'fashion'
 
@@ -38,7 +38,7 @@ def load_fashion_mnist():
         except FileNotFoundError as exc:
             raise RuntimeError('Git이 설치되어 있지 않습니다. Git 설치 후 다시 실행하세요.') from exc
 
-    # 공식 GitHub 저장소의 로더 사용: 기존 dataset/mnist.py와 다름!
+    # Fashion-MNIST 저장소의 mnist_reader 사용
     sys.path.insert(0, str(github_folder / 'utils'))
     import mnist_reader
 
@@ -48,8 +48,8 @@ def load_fashion_mnist():
 
 
 def train_network(hidden, lr, decay, x_train, t_train, x_val, t_val, epochs=3):
-    """5장 오차역전파와 6장 SGD를 사용해 학습한다."""
-    np.random.seed(7)  # 모델 비교 조건을 같게 설정
+    """오차역전파로 신경망 학습"""
+    np.random.seed(7)  # 비교할 때 랜덤값 고정
     net = MultiLayerNet(784, hidden, 10, weight_init_std='he', weight_decay_lambda=decay)
     losses, train_accs, val_accs = [], [], []
     best_acc, best_net = -1, None
@@ -63,7 +63,7 @@ def train_network(hidden, lr, decay, x_train, t_train, x_val, t_val, epochs=3):
             for key in net.params:
                 net.params[key] -= lr * grads[key]
 
-        # 데이터가 많을 때도 출력이 느리지 않도록 훈련 정확도는 앞 2,000장으로 확인
+        # 학습 정확도는 2,000장만 확인
         train_acc = net.accuracy(x_train[:2000], t_train[:2000])
         val_acc = net.accuracy(x_val, t_val)
         loss = net.loss(x_train[:2000], t_train[:2000])
@@ -78,14 +78,14 @@ def train_network(hidden, lr, decay, x_train, t_train, x_val, t_val, epochs=3):
 
 
 def parse_hidden(text):
-    # CSV에 적은 [100, 50] 형태의 은닉층 구조를 리스트로 복원
+    # 문자열을 은닉층 리스트로 변경
     return [int(value.strip()) for value in text.strip('[]').split(',')]
 
 
 def main():
     x, t, x_test, t_test = load_fashion_mnist()
 
-    # 전체 훈련 60,000장을 학습/검증으로 분리. 테스트 10,000장은 마지막에만 사용.
+    # 훈련 데이터를 학습용과 검증용으로 나누기
     rng = np.random.RandomState(2026)
     ids = rng.permutation(len(t))
     val_ids, train_ids = ids[:6000], ids[6000:]
@@ -94,7 +94,7 @@ def main():
     del x, t
     print('학습:', x_train.shape, '검증:', x_val.shape, '테스트:', x_test.shape)
 
-    # 실험은 시간을 아끼기 위해 학습 6,000장/검증 2,000장으로 진행
+    # 비교 실험에는 일부 데이터만 사용
     small_x, small_t = x_train[:6000], t_train[:6000]
     small_val_x, small_val_t = x_val[:2000], t_val[:2000]
     results = []
@@ -106,7 +106,7 @@ def main():
         results.append(['수동', str(hidden), lr, 0, float(acc)])
         print(' 결과:', hidden, lr, '검증 정확도', round(float(acc), 4))
 
-    # 수동 탐색에서 검증 정확도가 가장 높은 구조를 선택
+    # 수동 실험 중 가장 좋은 구조 선택
     best_manual = max(results, key=lambda row: row[4])
     hidden = parse_hidden(best_manual[1])
 
@@ -152,7 +152,7 @@ def main():
     plt.savefig(out / 'accuracy.png')
     plt.close()
 
-    # 테스트 세트는 모든 모델 선택이 끝난 뒤에 단 한 번 평가
+    # 마지막에 테스트 정확도 확인
     test_acc = network.accuracy(x_test, t_test)
     print('\n최종 검증 정확도:', round(float(acc), 4))
     print('최종 테스트 정확도:', round(float(test_acc), 4))
