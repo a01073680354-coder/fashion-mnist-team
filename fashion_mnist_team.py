@@ -6,13 +6,13 @@ import csv
 import copy
 import pickle
 import subprocess
-import sys
 from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 from common.multi_layer_net import MultiLayerNet
+from mnist_reader import load_mnist
 
 
 # 조 번호 입력 (예: '6')
@@ -38,12 +38,9 @@ def load_fashion_mnist():
         except FileNotFoundError as exc:
             raise RuntimeError('Git이 설치되어 있지 않습니다. Git 설치 후 다시 실행하세요.') from exc
 
-    # Fashion-MNIST 저장소의 mnist_reader 사용
-    sys.path.insert(0, str(github_folder / 'utils'))
-    import mnist_reader
-
-    x_train, t_train = mnist_reader.load_mnist(str(data_folder), kind='train')
-    x_test, t_test = mnist_reader.load_mnist(str(data_folder), kind='t10k')
+    # GitHub에서 가져온 mnist_reader 사용
+    x_train, t_train = load_mnist(str(data_folder), kind='train')
+    x_test, t_test = load_mnist(str(data_folder), kind='t10k')
     return x_train.astype(np.float32) / 255.0, t_train, x_test.astype(np.float32) / 255.0, t_test
 
 
