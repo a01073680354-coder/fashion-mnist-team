@@ -32,3 +32,6 @@ python fashion_mnist_team.py
 - [밑바닥부터 시작하는 딥러닝](https://github.com/WegraLee/deep-learning-from-scratch)
 
 ※ 전체 학습 결과와 Competition 호환성은 아직 확인하지 않았습니다.
+
+## AI 활용
+프로젝트를 진행하면서 ChatGPT의 도움을 받았습니다. 강의자료와 GitHub 예제를 참고해 코드 구성, 주석 정리, 실험 방법을 정할 때 활용했습니다. 학습 결과와 코드 실행 여부는 직접 확인할 예정입니다.
