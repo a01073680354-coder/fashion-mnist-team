@@ -20,11 +20,15 @@ python fashion_mnist_team.py
 
 ## 실험 내용
 - 은닉층 크기와 학습률을 바꿔서 4번 비교
-- Randomized Search로 학습률과 가중치 감소 계수를 4번 비교
+- SGD, Momentum, AdaGrad, Adam을 같은 조건(학습률 0.01, 3 Epoch)으로 비교
+- 검증 정확도가 가장 높은 최적화 알고리즘 선택
+- 선택한 알고리즘으로 Randomized Search 4번 진행
 - 검증 정확도가 높은 설정으로 최종 학습
 - 테스트 데이터는 마지막 성능 확인에만 사용
 
-그래프와 실험 결과는 `Competition` 폴더에 저장됩니다.
+비교 결과는 `Competition/optimizer_results.csv`, 에폭별 결과는 `optimizer_history.csv`에 저장됩니다. 네 알고리즘의 정확도와 손실 그래프도 같은 폴더에 저장됩니다.
+
+전체 학습 그래프와 실험 결과도 `Competition` 폴더에 저장됩니다.
 조 번호는 `fashion_mnist_team.py`의 `TEAM_NUMBER`에 입력하면 됩니다.
 
 ## 참고한 GitHub
