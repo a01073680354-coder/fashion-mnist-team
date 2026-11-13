@@ -176,7 +176,8 @@ def main():
         writer.writerow(['방식', '은닉층', '학습률', '가중치감소', '검증정확도'])
         writer.writerows(results)
 
-    best = max(results, key=lambda row: row[4])
+    # 선택된 옵티마이저로 진행한 랜덤 탐색 결과 중 최고 설정 사용
+    best = max(results[len(manual):], key=lambda row: row[4])
     final_hidden, final_lr, final_decay = parse_hidden(best[1]), best[2], best[3]
     print('\n[4] 최종 모델 학습:', best_optimizer, best[:4])
     acc, network, losses, train_accs, val_accs = train_network(
