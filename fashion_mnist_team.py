@@ -119,15 +119,37 @@ def main():
             hidden, 0.01, 0, small_x, small_t, small_val_x, small_val_t,
             epochs=3, optimizer_name=name
         )
-        optimizer_results.append([name, float(score)])
+        best_epoch = int(np.argmax(val_accs)) + 1
+        optimizer_results.append([
+            name, float(score), best_epoch,
+            float(train_accs[best_epoch - 1]),
+            float(losses[best_epoch - 1]),
+            float(val_accs[-1])
+        ])
         for epoch, (loss, train_acc, val_acc) in enumerate(
             zip(losses, train_accs, val_accs), start=1
         ):
             optimizer_history.append([name, epoch, loss, train_acc, val_acc])
         print(f'  {name} 최고 검증 정확도: {score:.4f}')
 
-    best_optimizer = max(optimizer_results, key=lambda row: row[1])[0]
-    print('선택된 최적화 알고리즘:', best_optimizer)
+    # 가장 높은 검증 정확도를 기록한 순서대로 결과 출력
+    optimizer_ranking = sorted(optimizer_results, key=lambda row: row[1], reverse=True)
+    best_optimizer = optimizer_ranking[0][0]
+
+    print('\n========== 최적화 알고리즘 비교 결과 ==========')
+    print(f'{"순위":<5} {"알고리즘":<10} {"최고 검증 정확도":>17} {"Epoch":>7} {"학습 정확도":>13} {"손실":>10}')
+    print('-' * 75)
+    for rank, (name, score, epoch, train_acc, loss, last_val) in enumerate(optimizer_ranking, start=1):
+        print(f'{rank:<5} {name:<10} {score * 100:>16.2f}% {epoch:>7} {train_acc * 100:>12.2f}% {loss:>10.4f}')
+
+    winner = optimizer_ranking[0]
+    runner_up = optimizer_ranking[1]
+    gap = (winner[1] - runner_up[1]) * 100
+    print('-' * 75)
+    print(f'가장 좋은 알고리즘: {winner[0]} (최고 검증 정확도 {winner[1] * 100:.2f}%)')
+    print(f'2위 {runner_up[0]}보다 {gap:.2f}%p 높음')
+    print('※ 비교 조건: 학습 6,000장 / 검증 2,000장 / 3 Epoch / 학습률 0.01')
+    print('===============================================')
 
     print('\n[3] Randomized Search: 학습률과 가중치 감소를 4번 무작위 탐색')
     random_rng = np.random.RandomState(42)
@@ -143,8 +165,12 @@ def main():
 
     with (out / 'optimizer_results.csv').open('w', newline='', encoding='utf-8-sig') as f:
         writer = csv.writer(f)
-        writer.writerow(['Optimizer', 'Best validation accuracy'])
-        writer.writerows(optimizer_results)
+        writer.writerow([
+            'Optimizer', 'Best validation accuracy', 'Best epoch',
+            'Train accuracy at best epoch', 'Loss at best epoch',
+            'Validation accuracy at last epoch'
+        ])
+        writer.writerows(optimizer_ranking)
     with (out / 'optimizer_history.csv').open('w', newline='', encoding='utf-8-sig') as f:
         writer = csv.writer(f)
         writer.writerow(['Optimizer', 'Epoch', 'Loss', 'Train accuracy', 'Validation accuracy'])
@@ -203,8 +229,15 @@ def main():
 
     # 마지막에 테스트 정확도 확인
     test_acc = network.accuracy(x_test, t_test)
-    print('\n최종 검증 정확도:', round(float(acc), 4))
-    print('최종 테스트 정확도:', round(float(test_acc), 4))
+    print('\n========== 최종 모델 선정 결과 ==========')
+    print('선택된 은닉층:', final_hidden)
+    print('선택된 최적화 알고리즘:', best_optimizer)
+    print(f'알고리즘 비교 최고 검증 정확도: {winner[1] * 100:.2f}%')
+    print(f'선택된 학습률: {final_lr:.6f}')
+    print(f'선택된 가중치 감소 계수: {final_decay:.8f}')
+    print(f'최종 최고 검증 정확도: {acc * 100:.2f}%')
+    print(f'최종 테스트 정확도: {test_acc * 100:.2f}%')
+    print('========================================')
 
     filename = f'network_Team{TEAM_NUMBER}.pkl' if TEAM_NUMBER else 'network.pkl'
     with (out / filename).open('wb') as f:
