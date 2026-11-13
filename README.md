@@ -26,7 +26,9 @@ python fashion_mnist_team.py
 - 검증 정확도가 높은 설정으로 최종 학습
 - 테스트 데이터는 마지막 성능 확인에만 사용
 
-비교 결과는 `Competition/optimizer_results.csv`, 에폭별 결과는 `optimizer_history.csv`에 저장됩니다. 네 알고리즘의 정확도와 손실 그래프도 같은 폴더에 저장됩니다.
+알고리즘 비교 결과는 터미널에 **최고 검증 정확도 순위, 1위 알고리즘, 2위와의 정확도 차이**로 출력됩니다.
+
+비교 결과는 `Competition/optimizer_results.csv`(최고 검증 정확도, 최고 Epoch, 해당 Epoch의 학습 정확도와 손실), 에폭별 결과는 `optimizer_history.csv`에 저장됩니다. 네 알고리즘의 정확도와 손실 그래프도 같은 폴더에 저장됩니다.
 
 전체 학습 그래프와 실험 결과도 `Competition` 폴더에 저장됩니다.
 조 번호는 `fashion_mnist_team.py`의 `TEAM_NUMBER`에 입력하면 됩니다.
